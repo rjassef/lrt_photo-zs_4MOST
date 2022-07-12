@@ -1,4 +1,5 @@
 import numpy as np
+import SED_Model
 
 class ReadResults(object):
 
@@ -23,3 +24,39 @@ class ReadResults(object):
         self.chi2_noagn = np.loadtxt("SED_fit_noagn_{}_all.dat".format(ztype), usecols=[3])
 
         return
+
+    def plot(self, id, phot, hardcopy=False, run_fit=False):
+
+        #Create the lrt SED Model object. 
+        gal = SED_Model.lrt_model()
+
+        #Match. Alert if there is more than one match. 
+        k = np.where(self.id==id)
+        if len(k)>1:
+            print("There are {} matches to id {}. Using the first one".format(len(k), id))
+        kuse = k[0][0]
+
+        #Populate the model. 
+        gal.jy = phot.jy[:,kuse]
+        gal.ejy = phot.ejy[:,kuse]
+        gal.jyuse = phot.jyuse[:,kuse]
+        gal.ejy[np.isnan(gal.ejy)] = 0.
+        gal.zspec = self.z[kuse]
+
+        if run_fit:
+            gal.kc_fit()
+        else:
+            gal.comp = self.comp[kuse]
+            gal.ebv = self.ebv[kuse]
+            gal.igm = self.igm[kuse]
+            gal.jymod = phot.jy[:,kuse]
+            gal.chi2 = self.chi2_agn[kuse]
+
+        #Plot it. 
+        if hardcopy:
+            gal.plot_to_file("Obj_{}_{}.png".format(id, self.ztype))
+        else:
+            gal.plot()
+
+        return
+
