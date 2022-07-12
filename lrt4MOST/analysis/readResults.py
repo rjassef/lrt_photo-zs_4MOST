@@ -1,5 +1,7 @@
 import numpy as np
 import SED_Model
+import pathlib
+import subprocess
 
 class ReadResults(object):
 
@@ -25,7 +27,7 @@ class ReadResults(object):
 
         return
 
-    def plot(self, id, phot, hardcopy=False, run_fit=False):
+    def plot(self, id, phot, hardcopy=False, run_fit=False, folder="SED_plots"):
 
         #Create the lrt SED Model object. 
         gal = SED_Model.lrt_model()
@@ -54,7 +56,9 @@ class ReadResults(object):
 
         #Plot it. 
         if hardcopy:
-            gal.plot_to_file("Obj_{}_{}.png".format(id, self.ztype))
+            if not pathlib.Path(folder).exists():
+                subprocess.call(["mkdir", folder])
+            gal.plot_to_file(folder+"/Obj_{}_{}.png".format(id, self.ztype))
         else:
             gal.plot()
 
