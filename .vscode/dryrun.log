@@ -1,6 +1,0 @@
-make --dry-run --always-make --keep-going --print-directory
-make: Entering directory `/home/rjassef/Proposals/4MOST/lrt_photo-zs_4MOST'
-make: Leaving directory `/home/rjassef/Proposals/4MOST/lrt_photo-zs_4MOST'
- 
-make: *** No targets specified and no makefile found.  Stop.
-
