@@ -4,6 +4,9 @@ SED_fit_noagn
 zphot
 zphot_noagn
 
+#vscode
+.vscode
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
