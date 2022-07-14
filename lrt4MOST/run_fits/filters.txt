@@ -11,3 +11,16 @@ WISE1           real_wise_band_1        3          3631.0
 WISE2           real_wise_band_2        3          3631.0
 WISE3           real_wise_band_3        3          3631.0
 WISE4           real_wise_band_4        3          3631.0
+g_delve         DECAM_g                 3          3631.0
+r_delve         DECAM_r                 3          3631.0
+i_delve         DECAM_i                 3          3631.0
+z_delve         DECAM_z                 3          3631.0
+J_vhs           vistaJ                  3          3631.0
+H_vhs           vistaH                  3          3631.0
+KS_vhs          vistaKs                 3          3631.0
+w1_catwise      real_wise_band_1        3          3631.0
+w2_catwise      real_wise_band_2        3          3631.0
+w3_allwise      real_wise_band_3        3          3631.0
+w4_allwise      real_wise_band_4        3          3631.0
+NUV_galex       nuv                     3          3631.0
+FUV_galex       fuv                     3          3631.0
