@@ -90,9 +90,9 @@ class RunLRT(object):
             for pp in p:
                 if pp.poll() is None:
                     i+=1
-                sleep(tsleep)
             if i==0:
                 break
+            sleep(tsleep)
 
         #Finally, combine the output files into one and remove the intermediary file.
         subprocess.call("cat {0:s}_output* > {1:s}".format(self.code, catname), shell=True)
