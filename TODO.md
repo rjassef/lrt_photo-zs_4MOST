@@ -1,5 +1,10 @@
 # List of Improvements Needed
 
+- [ ] Create documentation
+   - *Importance*: High
+   - *Difficulty*: Low
+   - *Required changes*: Add documentation to all python classes and subclasses. 
+
 - [ ] Only use fits files to save space.
    - *Importance*: Medium
    - *Difficulty*: Medium
