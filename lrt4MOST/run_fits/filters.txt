@@ -24,3 +24,7 @@ w3_allwise      real_wise_band_3        3          3631.0
 w4_allwise      real_wise_band_4        3          3631.0
 NUV_galex       nuv                     3          3631.0
 FUV_galex       fuv                     3          3631.0
+ukirt.Y         ukidssy                 3          3631.0
+ukirt.J         ukidssj                 3          3631.0
+ukirt.H         ukidssh                 3          3631.0
+ukirt.Ks        ukidssk                 3          3631.0
