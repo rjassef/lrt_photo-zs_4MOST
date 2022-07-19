@@ -47,8 +47,11 @@ c     Initialize the subroutines.
       continue
       read(line,*)ntarg,nchan
 
+c     Check if we are restarting from a mid point or not. 
+      call restart(ndone, 11, 12, fname_out)
+
 c     Start the main cycle.
-      do i=1,ntarg
+      do i=ndone+1,ntarg
 
 c     Read the 6'' aperture Photometry File
          read(11,*)id_obj, z, (jy(j),j=1,nchan),

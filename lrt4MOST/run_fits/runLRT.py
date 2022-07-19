@@ -22,7 +22,7 @@ class RunLRT(object):
         
         return
     
-    def run(self, phot, ncpu=None, tsleep=10, force=False):
+    def run(self, phot, ncpu=None, tsleep=10, force=False, restart=False):
 
         #Output catalog name. If it already exist, and execution is not forced, do not continue.
         if self.fit_type=="SED_fit":
@@ -57,32 +57,43 @@ class RunLRT(object):
         p = list()
         for n in range(ncat):
 
-            #Set the boundaries of the main array.
-            if n==0:
-                k1 = 0
-            else:
-                k1 = np.sum(nobjs[:n])
-            k2 = np.sum(nobjs[:n+1])
+            #Set the file names. 
+            finput  = "{0:s}_input_{1:02d}.dat".format(self.code,n)
+            foutput = "{0:s}_output_{1:02d}.dat".format(self.code,n)
 
-            #Set the output array.
-            out = np.zeros((nobjs[n],2+nchan*3))
-            out[:,0] = phot.id[k1:k2]
-            out[:,1] = phot.zspec[k1:k2]
-            out[:,        2:  nchan+2] = phot.jy[:, k1:k2].T
-            out[:,  nchan+2:2*nchan+2] = phot.ejy[:, k1:k2].T
-            out[:,2*nchan+2:3*nchan+2] = phot.jyuse[:, k1:k2].T
+            #Check if the input file already exists. Since we may be restarting from a stopped process, we may not need to rewrite it. 
+            if restart or not pathlib.Path(finput).exists():
 
-            #If we are using zphots, then add those to the data array instead. 
-            if zphots is not None:
-                out[:,1] = zphots[k1:k2]
+                #Set the boundaries of the main array.
+                if n==0:
+                    k1 = 0
+                else:
+                    k1 = np.sum(nobjs[:n])
+                k2 = np.sum(nobjs[:n+1])
 
-            #Write the data file.
-            cato = open("{0:s}_input_{1:02d}.dat".format(self.code,n),"w")
-            cato.write("{0:d} {1:d}\n".format(nobjs[n],nchan))
-            np.savetxt(cato,out,fmt='%15.0f %15.4f'+'%15.3e'*(2*nchan)+'%3.0f'*nchan)
-            cato.close()
+                #Set the output array.
+                out = np.zeros((nobjs[n],2+nchan*3))
+                out[:,0] = phot.id[k1:k2]
+                out[:,1] = phot.zspec[k1:k2]
+                out[:,        2:  nchan+2] = phot.jy[:, k1:k2].T
+                out[:,  nchan+2:2*nchan+2] = phot.ejy[:, k1:k2].T
+                out[:,2*nchan+2:3*nchan+2] = phot.jyuse[:, k1:k2].T
 
-            p.append(subprocess.Popen("{0:s}/lrt4MOST/fortran_codes/{1:s} {1:s}_input_{2:02d}.dat {1:s}_output_{2:02d}.dat".format(os.environ.get('LRT4MOST_LOC'),self.code,n),shell=True))
+                #If we are using zphots, then add those to the data array instead. 
+                if zphots is not None:
+                    out[:,1] = zphots[k1:k2]
+
+                #Write the data file.
+                cato = open("{0:s}_input_{1:02d}.dat".format(self.code,n),"w")
+                cato.write("{0:d} {1:d}\n".format(nobjs[n],nchan))
+                np.savetxt(cato,out,fmt='%15.0f %15.4f'+'%15.3e'*(2*nchan)+'%3.0f'*nchan)
+                cato.close()
+
+            #If we are forcing the restart, then erase the outputfile as well.
+            if restart:
+                subprocess.call(["rm","-f",foutput])
+
+            p.append(subprocess.Popen("{0:s}/lrt4MOST/fortran_codes/{1:s} {2} {3}".format(os.environ.get('LRT4MOST_LOC'),self.code,finput, foutput),shell=True))
 
         #Wait for all the threads to finish
         while True:

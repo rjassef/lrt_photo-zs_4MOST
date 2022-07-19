@@ -14,7 +14,7 @@ SRC = zphot.f zphot_noagn.f SED_fit.f SED_fit_noagn.f
 EXEC :=$(SRC:.f=)
 
 #Libraries
-LIBS = -L$(LRTPATH) -llrt -llapack
+LIBS = restart.f -L$(LRTPATH) -llrt -llapack
 
 all: $(EXEC)
 
