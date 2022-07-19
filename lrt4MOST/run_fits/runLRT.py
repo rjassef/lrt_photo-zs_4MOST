@@ -110,14 +110,6 @@ class RunLRT(object):
         #Wait for all the threads to finish
         while self.n_thread_active(p)>0:
             sleep(tsleep)
-        # while True:
-        #     i = 0
-        #     for pp in p:
-        #         if pp.poll() is None:
-        #             i+=1
-        #     if i==0:
-        #         break
-        #     sleep(tsleep)
 
         #Finally, combine the output files into one and remove the intermediary file.
         subprocess.call("cat {0:s}_output* > {1:s}".format(self.code, catname), shell=True)
