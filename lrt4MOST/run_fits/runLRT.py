@@ -22,7 +22,7 @@ class RunLRT(object):
         
         return
     
-    def run(self, phot, ncpu=None, tsleep=2, force=False, restart=False, nobj_per_thread=None):
+    def run(self, phot, ncpu=None, tsleep=2, force=False, reset=False, nobj_per_thread=None):
 
         #Output catalog name. If it already exist, and execution is not forced, do not continue.
         if self.fit_type=="SED_fit":
@@ -74,7 +74,7 @@ class RunLRT(object):
             foutput = "{0:s}_output_{1:06d}.dat".format(self.code,n)
 
             #Check if the input file already exists. Since we may be restarting from a stopped process, we may not need to rewrite it. 
-            if restart or not pathlib.Path(finput).exists():
+            if reset or not pathlib.Path(finput).exists():
 
                 #Set the boundaries of the main array.
                 if n==0:
@@ -101,8 +101,8 @@ class RunLRT(object):
                 np.savetxt(cato,out,fmt='%15.0f %15.4f'+'%15.3e'*(2*nchan)+'%3.0f'*nchan)
                 cato.close()
 
-            #If we are forcing the restart, then erase the outputfile as well.
-            if restart:
+            #If we are forcing the reset, then erase the outputfile as well.
+            if reset:
                 subprocess.call(["rm","-f",foutput])
 
             p.append(subprocess.Popen("{0:s}/lrt4MOST/fortran_codes/{1:s} {2} {3}".format(os.environ.get('LRT4MOST_LOC'),self.code,finput, foutput),shell=True))
