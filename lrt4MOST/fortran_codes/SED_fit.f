@@ -6,7 +6,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       program main
       implicit real*8 (a-h,o-z)
-      parameter (NCMAX=32,NSMAX=4)
+      parameter (NCMAX=40,NSMAX=4)
 
       integer*8 id_obj
 
@@ -15,10 +15,10 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       real*8 jymodtot(NCMAX)
       common /models/jymod,jymodtot,vec
 
-      real*8 jy(15),ejy(15)
-      integer jyuse(15)
-      real*8 jymodel(15),jycorr(15),comp(4)
-      real*8 mag_kcorr(15),mag(15)
+      real*8 jy(NCMAX),ejy(NCMAX)
+      integer jyuse(NCMAX)
+      real*8 jymodel(NCMAX),jycorr(NCMAX),comp(4)
+      real*8 mag_kcorr(NCMAX),mag(NCMAX)
 
       real*8 jyzero(NCMAX),con(NCMAX),lbar(NCMAX)
       common /cal1/jyzero,con,lbar

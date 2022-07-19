@@ -5,11 +5,12 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       program main
       implicit real*8 (a-h,o-z)
+      parameter (NCMAX=40)
 
       integer*8 id_obj
 
-      real*8 jy(13),ejy(13),comp(4)
-      integer jyuse(13)
+      real*8 jy(NCMAX),ejy(NCMAX),comp(4)
+      integer jyuse(NCMAX)
 
       character*200 line
       character*200 fname_in, fname_out
