@@ -22,7 +22,7 @@ class RunLRT(object):
         
         return
     
-    def run(self, phot, ncpu=None, tsleep=10, force=False, restart=False):
+    def run(self, phot, ncpu=None, tsleep=2, force=False, restart=False, nobj_per_thread=None):
 
         #Output catalog name. If it already exist, and execution is not forced, do not continue.
         if self.fit_type=="SED_fit":
@@ -49,17 +49,29 @@ class RunLRT(object):
             else:
                 zphots = np.loadtxt("zphot_noagn_all.dat",usecols=[2])
 
-        #Create the ncpu catalogs and run the code in each of them separately in parallel. 
-        ncat = ncpu
+        #Create the ncpu catalogs and run the code in each of them separately in parallel.
+        if nobj_per_thread is None:
+            ncat = ncpu
+        else:
+            ncat = int(ntot/nobj_per_thread)
+        if ncat>=1e6:
+            print("Cannot run more than a million sub catalogs without loosing track of the order. Please modify code.")
+            exit()
         nobjs = np.ones(ncat, dtype=np.int32) * np.int32(ntot/ncat)
         if np.sum(nobjs)<ntot:
             nobjs[-1] += ntot-np.sum(nobjs)
+
+        #Run all of them, making sure there aren't more than ncpu threads running at a time.
         p = list()
         for n in range(ncat):
 
+            #Check that we are not exceeding the max amounts of threads. Wait here until a thread opens. 
+            while self.n_thread_active(p)==ncpu:
+                sleep(tsleep)
+
             #Set the file names. 
-            finput  = "{0:s}_input_{1:02d}.dat".format(self.code,n)
-            foutput = "{0:s}_output_{1:02d}.dat".format(self.code,n)
+            finput  = "{0:s}_input_{1:06d}.dat".format(self.code,n)
+            foutput = "{0:s}_output_{1:06d}.dat".format(self.code,n)
 
             #Check if the input file already exists. Since we may be restarting from a stopped process, we may not need to rewrite it. 
             if restart or not pathlib.Path(finput).exists():
@@ -84,7 +96,7 @@ class RunLRT(object):
                     out[:,1] = zphots[k1:k2]
 
                 #Write the data file.
-                cato = open("{0:s}_input_{1:02d}.dat".format(self.code,n),"w")
+                cato = open(finput,"w")
                 cato.write("{0:d} {1:d}\n".format(nobjs[n],nchan))
                 np.savetxt(cato,out,fmt='%15.0f %15.4f'+'%15.3e'*(2*nchan)+'%3.0f'*nchan)
                 cato.close()
@@ -96,17 +108,26 @@ class RunLRT(object):
             p.append(subprocess.Popen("{0:s}/lrt4MOST/fortran_codes/{1:s} {2} {3}".format(os.environ.get('LRT4MOST_LOC'),self.code,finput, foutput),shell=True))
 
         #Wait for all the threads to finish
-        while True:
-            i = 0
-            for pp in p:
-                if pp.poll() is None:
-                    i+=1
-            if i==0:
-                break
+        while self.n_thread_active(p)>0:
             sleep(tsleep)
+        # while True:
+        #     i = 0
+        #     for pp in p:
+        #         if pp.poll() is None:
+        #             i+=1
+        #     if i==0:
+        #         break
+        #     sleep(tsleep)
 
         #Finally, combine the output files into one and remove the intermediary file.
         subprocess.call("cat {0:s}_output* > {1:s}".format(self.code, catname), shell=True)
         subprocess.call("rm {0:s}_input_*.dat {0:s}_output_*.dat".format(self.code), shell=True)
 
         return
+
+    def n_thread_active(self, p):
+        i = 0
+        for pp in p:
+            if pp.poll() is None:
+                i+=1
+        return i
