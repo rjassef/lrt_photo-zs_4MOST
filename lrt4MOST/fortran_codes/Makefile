@@ -2,7 +2,7 @@
 FC = gfortran
 
 #Compiler Flags
-FCFLAGS = -ffixed-line-length-none -std=legacy
+FCFLAGS = -ffixed-line-length-none -std=legacy -mcmodel=medium
 
 #Removal Tool
 RM = /bin/rm -f
@@ -25,5 +25,5 @@ run_fitzero: run_fitzero.f fitzero_omp.f
 	$(FC) -o run_fitzero run_fitzero.f fitzero_omp.f $(FCFLAGS) $(LIBS) -fopenmp
 
 clean: 
-	$(RM) $(EXEC)
+	$(RM) $(EXEC) run_fitzero
 

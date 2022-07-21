@@ -7,9 +7,10 @@ c     (http://www.astronomy.ohio-state.edu/~rjassef/instructions.html)
 c     for a more thorough explanation.
 
       subroutine fitzero_omp(filename,niter2,chifrac,corr,op)
-      use omp_lib
       implicit real*8 (a-h,o-z)
       parameter (NCMAX=32,NWMAX=350,NSMAX=4,NTMAX=4,NGMAX=17000)
+
+      include 'omp_lib.h'
 
       real*8 corr(*)
       integer op   
@@ -41,18 +42,25 @@ c     routine.
       common /weights1/wgt,c
       integer jwmin(NCMAX),jwmax(NCMAX)
       common /weights2/jwmin,jwmax 
+      integer jwmin_omp(NCMAX),jwmax_omp(NCMAX)
+      real*8 wgt_omp(NCMAX,NWMAX)
 
       real*8 jy(NCMAX),ejy(NCMAX)
       integer nchan
       common /data1b/jy,ejy,nchan
+      real*8 jy_omp(NCMAX), ejy_omp(NCMAX)
 
       integer jyuse(NCMAX)
       common /data2/jyuse
+      integer jyuse_omp(NCMAX)
 
       real*8 vec(NSMAX)
       real*8 jymod(NSMAX,NCMAX)
       real*8 jymodtot(NCMAX)
       common /models/jymod,jymodtot,vec
+      real*8 vec_omp(NSMAX)
+      real*8 jymod_omp(NSMAX,NCMAX)
+      real*8 jymodtot_omp(NCMAX)
 
       real*8 spec(NSMAX,NWMAX),specuse(NSMAX,NWMAX)
       common /specmod1/spec,specuse,nspec
@@ -66,6 +74,7 @@ c     routine.
 
       real*8 tau(NWMAX),ebv,igm
       common /dust/tau,ebv,igm
+      real*8 ebv_omp, igm_omp
 
 cccccccccccccccccccccccccccccccccccccccc
 
@@ -130,26 +139,26 @@ c     Move everything to fluxes if in magnitudes
       endif
 
 c     Calculate the weights of each object.
-      !$OMP PARALLEL
       if(verbose.eq.1) then
          print*,'Building weights...'
       endif
-      i1 = (1.*omp_get_thread_num()  )/(1.*omp_get_max_threads()) * ntarg
-      i2 = (1.*omp_get_thread_num()+1)/(1.*omp_get_max_threads()) * ntarg
-      print*,ntarg,i1,i2,omp_get_thread_num(),omp_get_max_threads()
-      ! do i=i1,i2
-      !    do j=1,nchan
-      !        do k=1,nwave
-      !          wgt(j,k) = getweight(z(i),j,k)
-      !          wgta(i,j,k) = wgt(j,k)
-      !       enddo
-      !       call getrange(j)         
-      !       jwmaxa(i,j) = jwmax(j)
-      !       jwmina(i,j) = jwmin(j)
-      !    enddo
-      ! enddo
-      !OMP END PARALLEL
-      stop
+
+      do i=1,ntarg
+         do j=1,nchan
+            do k=1,nwave
+               wgt(j,k) = getweight(z(i),j,k)
+               ! if(wgt(j,k).gt.0.d0) then
+               !    print*,i,z(i),wgt(j,k),j,k
+               !    pause
+               ! endif
+               wgta(i,j,k) = wgt(j,k)
+            enddo
+            call getrange(j)         
+            jwmaxa(i,j) = jwmax(j)
+            jwmina(i,j) = jwmin(j)
+         enddo
+      enddo
+
 
 c     Set all dchiuse(i) to 1 for first run
       do i=1,ntarg
@@ -172,50 +181,56 @@ c     Restart all termu and terml
          enddo
          chi2 = 0.d0
 
-         do i=1,ntarg
+c$OMP PARALLEL PRIVATE(i1,i2,j,l,i,jymod_omp,jymodtot_omp,vec_omp,jy_omp,ejy_omp,jyuse_omp,ebv_omp,igm_omp, wgt_omp, jwmin_omp, jwmax_omp)
+         i1 = (1.*omp_get_thread_num()  )/(1.*omp_get_num_threads()) * ntarg + 1
+         i2 = (1.*omp_get_thread_num()+1)/(1.*omp_get_num_threads()) * ntarg
+         do i=i1,i2
 
 c     Set all the variables needed for compatibility
             do j=1,nchan
-               jy(j)  = jya(i,j)
-               ejy(j) = ejya(i,j)**2
-               jyuse(j) = jyusea(i,j)
+               jy_omp(j)  = jya(i,j)
+               ejy_omp(j) = ejya(i,j)**2
+               jyuse_omp(j) = jyusea(i,j)
                do k = 1,nwave
-                  wgt(j,k) = wgta(i,j,k)
+                  wgt_omp(j,k) = wgta(i,j,k)
                enddo
-               jwmax(j) = jwmaxa(i,j)
-               jwmin(j) = jwmina(i,j)
+               jwmax_omp(j) = jwmaxa(i,j)
+               jwmin_omp(j) = jwmina(i,j)
             enddo
-            
+
 c     Now Fit the Model Fluxes to the spectra
             do l=1,nspec
-               vec(l) = 0.d0
+               vec_omp(l) = 0.d0
             enddo
             do l = 1,nspec
                ivaryobj(l) = 1
             enddo
             chiold = dchi(i)
-            call fitzero_fitgal_omp(kk,isuccess,z(i))
+            call fitzero_fitgal_omp(kk,isuccess,z(i), jy_omp, ejy_omp, jyuse_omp, nchan, jymod_omp, jymodtot_omp, vec_omp, ebv_omp, igm_omp, wgt_omp, c, jwmin_omp, jwmax_omp)
 
+c$OMP CRITICAL
 c     Add the flux terms.
             if(dchiuse(i).eq.1) then
                do j=1,nchan
-                  if(jyuse(j).ge.1) then
-                     termu(j) = termu(j) + jymodtot(j)*jy(j)/ejy(j)
-                     terml(j) = terml(j) + jymodtot(j)**2/ejy(j)
+                  if(jyuse_omp(j).ge.1) then
+                     termu(j) = termu(j) + jymodtot_omp(j)*jy_omp(j)/ejy_omp(j)
+                     terml(j) = terml(j) + jymodtot_omp(j)**2/ejy_omp(j)
                   endif
                enddo
             endif
-            
+c$OMP END CRITICAL
+    
 c     Calculate the chi2 for each galaxy
             dchi(i) = 0.d0
             do j=1,nchan
-               if(jyuse(j).ge.1) then
-                  dchi(i) = dchi(i) + (jy(j)-jymodtot(j))**2/ejy(j)
+               if(jyuse_omp(j).ge.1) then
+                  dchi(i) = dchi(i) + (jy_omp(j)-jymodtot_omp(j))**2/ejy_omp(j)
                endif
             enddo
             if(dchiuse(i).eq.1) chi2 = chi2 + dchi(i)
          enddo
-      
+c$OMP END PARALLEL
+         
 c     Calculate the corrections on each band, keeping the first one
 c     fixed
          do j=1,nchan
@@ -246,8 +261,8 @@ c     If this is the first run, reset the constants
             enddo
          endif
 
-         write(12,200)(c(j),j=1,nchan),chi2
- 200     format(12E20.6)
+c         write(12,200)(c(j),j=1,nchan),chi2
+c 200     format(12E20.6)
          
       enddo
 
@@ -278,20 +293,20 @@ c     redshift tables.
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 c     Determine the fit coefficients for individual galaxies.
-      subroutine fitzero_fitgal_omp(niter,isuccess,z)
+      subroutine fitzero_fitgal_omp(niter,isuccess,z, jy, ejy, jyuse, nchan, jymod, jymodtot, vec, ebv_best, igm_best, wgt, c,jwmin, jwmax)
       implicit real*8 (a-h,o-z)
       parameter (NCMAX=32,NGMAX=17000,NWMAX=350,NSMAX=4,NTMAX=4)
       
       real*8 jy(NCMAX),ejy(NCMAX)
-      common /data1b/jy,ejy,nchan
+      !common /data1b/jy,ejy,nchan
       
       integer jyuse(NCMAX)
-      common /data2/jyuse
+      !common /data2/jyuse
       
       real*8 vec(NSMAX)
       real*8 jymod(NSMAX,NCMAX)
       real*8 jymodtot(NCMAX)
-      common /models/jymod,jymodtot,vec
+      !common /models/jymod,jymodtot,vec
       
       real*8 spec(NSMAX,NWMAX),specuse(NSMAX,NWMAX)
       common /specmod1/spec,specuse,nspec
@@ -299,9 +314,9 @@ c     Determine the fit coefficients for individual galaxies.
       
       real*8 wgt(NCMAX,NWMAX)
       real*8 c(NCMAX)
-      common /weights1/wgt,c
+      !common /weights1/wgt,c
       integer jwmin(NCMAX),jwmax(NCMAX)
-      common /weights2/jwmin,jwmax
+      !common /weights2/jwmin,jwmax
       
       integer ivaryobj(NSMAX)
       common /ivary/ivaryobj
@@ -331,6 +346,7 @@ c     Determine the fit coefficients for individual galaxies.
 
       real*8 tau(NWMAX),ebv,igm
       common /dust/tau,ebv,igm
+      real*8 ebv_best, igm_best
 
       real*8 tigm(NWMAX)
 
@@ -339,7 +355,6 @@ c     Determine the fit coefficients for individual galaxies.
       integer ne,ng
       common /redpars/emin,emax,de,ne     
       common /igmpars/gmin,gmax,dg,ng
-
 
       chimin = 1.d32
       
@@ -470,6 +485,7 @@ c     Solve assuming only positive coefficients. If convergence fails,
 c     revert to the slower version going through all possible
 c     combinations.
             call my_nnls_2(a,maxdim,nm1,nm1,b,temps,MODE,its,0)
+c            MODE = 1
             if(MODE.eq.3) then
                do l1=1,nm1
                   b(l1) = bsave(l1)
@@ -517,8 +533,8 @@ c     Calculate the chi2 of the solution.
             if(chi.le.chitabigm(ig)) chitabigm(ig) = chi
             if(chi.le.chimin) then
                chimin = chi
-               ebv    = euse
-               igm    = guse
+               ebv_best    = euse
+               igm_best    = guse
                iebst  = ie
                igbst  = ig
                do l=1,nspec
@@ -554,7 +570,7 @@ c     as the surface is not necessarily a good paraboloid.
       enddo
 
 c     Finally remove the prior term from the chi2.
-      chimin = chimin - ((ebv/0.5d0)**2 + ((igm-1.d0)/0.5d0)**2)
+      chimin = chimin - ((ebv_best/0.5d0)**2 + ((igm_best-1.d0)/0.5d0)**2)
 
       return
       end
