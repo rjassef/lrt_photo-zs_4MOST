@@ -13,7 +13,7 @@ c     Open the files used.
         call getarg(1,fname_in)
 
 c     Initialize the subroutines.
-        call kcinit('bandmag.dat',1,1,1,1)
+        call kcinit('bandmag.dat',1,1,1,0)
 
         call fitzero_omp(fname_in,10,0.8d0,corr,0)
 

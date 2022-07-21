@@ -8,7 +8,7 @@ c     for a more thorough explanation.
 
       subroutine fitzero_omp(filename,niter2,chifrac,corr,op)
       implicit real*8 (a-h,o-z)
-      parameter (NCMAX=32,NWMAX=350,NSMAX=4,NTMAX=4,NGMAX=17000)
+      parameter (NCMAX=32,NWMAX=350,NSMAX=4,NTMAX=4,NGMAX=40000)
 
       include 'omp_lib.h'
 
@@ -147,10 +147,6 @@ c     Calculate the weights of each object.
          do j=1,nchan
             do k=1,nwave
                wgt(j,k) = getweight(z(i),j,k)
-               ! if(wgt(j,k).gt.0.d0) then
-               !    print*,i,z(i),wgt(j,k),j,k
-               !    pause
-               ! endif
                wgta(i,j,k) = wgt(j,k)
             enddo
             call getrange(j)         
@@ -295,7 +291,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c     Determine the fit coefficients for individual galaxies.
       subroutine fitzero_fitgal_omp(niter,isuccess,z, jy, ejy, jyuse, nchan, jymod, jymodtot, vec, ebv_best, igm_best, wgt, c,jwmin, jwmax)
       implicit real*8 (a-h,o-z)
-      parameter (NCMAX=32,NGMAX=17000,NWMAX=350,NSMAX=4,NTMAX=4)
+      parameter (NCMAX=32,NWMAX=350,NSMAX=4,NTMAX=4)
       
       real*8 jy(NCMAX),ejy(NCMAX)
       !common /data1b/jy,ejy,nchan
