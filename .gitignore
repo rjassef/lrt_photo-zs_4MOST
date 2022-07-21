@@ -3,6 +3,7 @@ SED_fit
 SED_fit_noagn
 zphot
 zphot_noagn
+run_fitzero
 
 #vscode
 .vscode
