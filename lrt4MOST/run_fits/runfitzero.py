@@ -1,13 +1,16 @@
 import subprocess
 import os
 import multiprocessing
+import numpy as np
 
-def Runfitzero(phot, catname="fitzero_sample.txt", ncpu=None):
+def Runfitzero(phot, catname="fitzero_sample.txt", ncpu=None, nobj_max=None):
 
     #First, write the fitzero sample file.
     #Write the fitzero file. 
     cato = open(catname,"w")
-    for k in range(len(phot.id)):
+    if nobj_max is None:
+        nobj_max = len(phot.id)
+    for k in range(nobj_max):
         cato.write("{0:10.4f} ".format(phot.zspec[k]))
         for j in range(phot.nchan):
             cato.write("{0:10.3e} ".format(phot.jy[j,k]))
@@ -27,7 +30,14 @@ def Runfitzero(phot, catname="fitzero_sample.txt", ncpu=None):
     #Erase the previous channel.zpc file if it exists.
     subprocess.call(["rm","-f","channel.zpc"])
 
-    #Finallys, call the fitzero program. 
+    #Call the fitzero program. 
     subprocess.call(["{0:s}/lrt4MOST/fortran_codes/run_fitzero".format(os.environ.get('LRT4MOST_LOC')),catname],env=my_env)
+
+    #Now, make the corrections file.
+    corr = np.loadtxt("channel.zpc")
+    cato = open("zero_point_corrections.dat","w")
+    for k,col in phot.photcols:
+        cato.write("{} {}\n".format(col,corr[k]))
+    cato.close()
 
     return
