@@ -15,7 +15,7 @@ Finally, you either need to add this package to your PYTHONPATH. You can do it, 
 
     source setup_bash
 
-### Example to Select AGN using an F-test
+### Example to Select AGN
 
 We assume that we start either from the pre-processed catalog produced by Alejandra for CIGALE. 
 
