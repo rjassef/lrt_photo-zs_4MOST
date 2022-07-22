@@ -127,7 +127,7 @@ class RunLRT(object):
                 i+=1
         return i
 
-    def set_zpc(self,phot):
+    def set_zpc(self, phot):
         if not pathlib.Path("zero_point_corrections.dat").exists():
             return
         zpc = dict()
@@ -140,7 +140,7 @@ class RunLRT(object):
         cato = open("channel.zpc","w")
         for col in phot.photcols:
             if col in zpc:
-                cato.write("{}\n",zpc[col])
+                cato.write("{}\n".format(zpc[col]))
             else:
                 cato.write("1.0\n")
         cato.close()
