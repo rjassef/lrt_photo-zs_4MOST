@@ -36,7 +36,7 @@ def Runfitzero(phot, catname="fitzero_sample.txt", ncpu=None, nobj_max=None):
     #Now, make the corrections file.
     corr = np.loadtxt("channel.zpc")
     cato = open("zero_point_corrections.dat","w")
-    for k,col in phot.photcols:
+    for k,col in enumerate(phot.photcols):
         cato.write("{} {}\n".format(col,corr[k]))
     cato.close()
 
