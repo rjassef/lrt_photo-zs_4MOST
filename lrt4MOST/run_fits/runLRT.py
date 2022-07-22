@@ -41,6 +41,9 @@ class RunLRT(object):
         ntot = phot.nobj
         nchan = phot.nchan
 
+        #See if there are any zero point corrections.
+        self.set_zpc(phot)
+
         #If needed to, read the photo-zs.
         zphots = None
         if self.fit_type=="SED_fit" and self.ztype=="zphot":
@@ -123,3 +126,23 @@ class RunLRT(object):
             if pp.poll() is None:
                 i+=1
         return i
+
+    def set_zpc(self,phot):
+        if not pathlib.Path("zero_point_corrections.dat").exists():
+            return
+        zpc = dict()
+        cat = open("zero_point_corrections.dat")
+        for line in cat:
+            x = line.split()
+            zpc[x[0]] = x[1]
+        cat.close()
+
+        cato = open("channel.zpc","w")
+        for col in phot.photcols:
+            if col in zpc:
+                cato.write("{}\n",zpc[col])
+            else:
+                cato.write("1.0\n")
+        cato.close()
+
+        return

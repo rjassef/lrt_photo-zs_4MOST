@@ -40,4 +40,7 @@ def Runfitzero(phot, catname="fitzero_sample.txt", ncpu=None, nobj_max=None):
         cato.write("{} {}\n".format(col,corr[k]))
     cato.close()
 
+    #Erase the channel.zpc file.
+    subprocess.call(["rm","-f","channel.zpc"])
+
     return
