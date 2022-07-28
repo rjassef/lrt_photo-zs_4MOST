@@ -4,6 +4,7 @@ SED_fit_noagn
 zphot
 zphot_noagn
 run_fitzero
+star_fit
 
 #vscode
 .vscode

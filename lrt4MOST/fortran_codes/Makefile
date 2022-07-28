@@ -8,7 +8,7 @@ FCFLAGS = -ffixed-line-length-none -std=legacy -mcmodel=medium
 RM = /bin/rm -f
 
 #Source files
-SRC = zphot.f zphot_noagn.f SED_fit.f SED_fit_noagn.f
+SRC = zphot.f zphot_noagn.f SED_fit.f SED_fit_noagn.f star_fit.f
 
 #Executables.
 EXEC :=$(SRC:.f=)

@@ -7,12 +7,20 @@ import pathlib
 
 class RunLRT(object):
 
-    def __init__(self, fit_type, with_AGN, ztype):
+    def __init__(self, fit_type, ztype, with_AGN=True, stype=None):
 
         #Save input flags.
         self.fit_type = fit_type
         self.with_AGN = with_AGN
         self.ztype = ztype
+        self.stype = stype
+
+        self.star_type_ID = {
+            "MS":1,
+            "GS":2,
+            "SGS":3,
+            "BDs":4,
+        }
 
         #Determine the code to use.
         if self.with_AGN:
@@ -27,6 +35,8 @@ class RunLRT(object):
         #Output catalog name. If it already exist, and execution is not forced, do not continue.
         if self.fit_type=="SED_fit":
             catname = "{}_{}_all.dat".format(self.code, self.ztype)
+        elif self.fit_type=="star_fit":
+            catname = "{}_{}_all.dat".format(self.code, self.stype)
         else:
             catname = "{}_all.dat".format(self.code)
         if not force and pathlib.Path(catname).exists():
@@ -108,7 +118,11 @@ class RunLRT(object):
             if reset:
                 subprocess.call(["rm","-f",foutput])
 
-            p.append(subprocess.Popen("{0:s}/lrt4MOST/fortran_codes/{1:s} {2} {3}".format(os.environ.get('LRT4MOST_LOC'),self.code,finput, foutput),shell=True))
+            #Run the code. 
+            code_path = "{0:s}/lrt4MOST/fortran_codes/{1:s}".format(os.environ.get('LRT4MOST_LOC'),self.code)
+            if self.ztype=='star':
+                code_path += " {}".format(self.star_type_ID[self.stype])
+            p.append(subprocess.Popen("{0} {1} {2}".format(code_path, finput, foutput),shell=True))
 
         #Wait for all the threads to finish
         while self.n_thread_active(p)>0:

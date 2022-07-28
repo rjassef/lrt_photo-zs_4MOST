@@ -2,6 +2,7 @@ from .run_fits.readPhot import ReadPhot
 from .run_fits.readPhotCtype2 import ReadPhotCtype2
 from .run_fits.getPhotozs import GetPhotozs
 from .run_fits.getSEDFits import GetSEDFits
+from .run_fits.getStarFits import GetStarFits
 from .run_fits.runfitzero import Runfitzero
 from .analysis.ftest import Ftest
 from .analysis.readResults import ReadResults
