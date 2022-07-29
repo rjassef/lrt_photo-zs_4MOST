@@ -17,6 +17,7 @@ class ReadPhot(ProcPhot):
         for k, col in enumerate(colnames):
             if col==colnames[k-1]+"_err":
                 self.photcols.append(colnames[k-1])
+        self.photcols = np.array(self.photcols)
         self.nchan = len(self.photcols)
 
         #Now, save the photometry, the IDs and the redshifts.
