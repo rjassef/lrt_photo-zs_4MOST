@@ -4,6 +4,7 @@ from .run_fits.getPhotozs import GetPhotozs
 from .run_fits.getSEDFits import GetSEDFits
 from .run_fits.getStarFits import GetStarFits
 from .run_fits.runfitzero import Runfitzero
+from .run_fits.combine_star_fit_catalogs import combine_star_fit_catalogs
 from .analysis.ftest import Ftest
 from .analysis.readResults import ReadResults
 from .analysis.bic import BIC
