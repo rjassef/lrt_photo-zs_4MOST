@@ -59,7 +59,6 @@ class ReadResults(object):
         if len(k)>1:
             print("There are {} matches to id {}. Using the first one".format(len(k), id))
         kuse = k[0][0]
-        print(kuse)
 
         #Create the lrt SED Model object. 
         if self.ztype == 'star':
@@ -73,18 +72,18 @@ class ReadResults(object):
         obj.ejy = phot.ejy[:,kuse]
         obj.jyuse = phot.jyuse[:,kuse]
         obj.ejy[np.isnan(obj.ejy)] = 0.
+        obj.name = phot.id[kuse]
         if self.ztype!='star':
-            obj.zspec = self.z[kuse]
+            #obj.zspec = self.z[kuse]
+            exec("obj.{} = {}".format(self.ztype,self.z[kuse]))
 
         if run_fit:
             if self.ztype=='star':
                 obj.fit()
-                print(obj.comp)
             else:
                 obj.kc_fit()
         else:
             obj.comp = self.comp[kuse]
-            print(obj.comp)
             obj.jymod = phot.jy[:,kuse]
             if self.ztype=='star':
                 obj.chi2 = self.chi2[kuse]             
