@@ -48,14 +48,19 @@ class Ftest(AGNSelection):
         return
 
 
-    def selectAGN(self, res, pmax=0.1, chi2_max=100, fname=None, zphot_min_cut=True):
+    def selectAGN(self, res, pmax=0.1, chi2_max=100, fname=None, zphot_min_cut=False, res_stars=None, select_stars_function=None):
+
+        #Attempt to read or calculate the F values. 
+        self.getF(res)
+        if not hasattr(self, 'F'):
+            self.readF()
 
         #Output catalog name.
         if fname is None:
             fname = "AGN_Ftest_{}.dat".format(self.ztype)
 
         #Run the selection.
-        kuse = (self.p<pmax) 
+        kuse = (self.p<pmax) & (self.is_not_star(res, res_stars, select_stars_function))
 
         #Generate and save the list of objects.
         self.savelist(fname, kuse, res, chi2_max, zphot_min_cut)

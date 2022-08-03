@@ -15,3 +15,12 @@ class AGNSelection(object):
         np.savetxt(fname,np.array([self.objid_AGN, z_AGN, ahat_AGN, ebv_AGN]).T, fmt='%15.0f %10.3f %7.2f %7.2f')
 
         return
+
+    def is_not_star(self, res, res_stars, select_stars_function):
+        kuse = np.ones(res.chi2_agn.shape, dtype=np.bool)
+        if res_stars is not None:
+            if select_stars_function is None:
+                kuse = (kuse) & (res_stars.chi2>res.chi2_agn)
+            else:
+                kuse = (kuse) & (~select_stars_function(res, res_stars))
+        return kuse
