@@ -26,7 +26,7 @@ class ReadResults(object):
 
             #Read the rest of the file.
             data = np.loadtxt(catname, skiprows=1)
-            self.id        = data[:,0]
+            self.id        = np.int64(data[:,0])
             self.chi2      = data[:,1]
             self.star_set  = data[:,2]
             self.star_temp = data[:,3]
@@ -37,7 +37,7 @@ class ReadResults(object):
             if catname is None:
                 catname = "SED_fit_{}_all.dat".format(ztype)
             data = np.loadtxt(catname)
-            self.id = data[:,0]
+            self.id = np.int64(data[:,0])
             self.nb = data[:,1]
             self.z  = data[:,2]
             self.chi2_agn = data[:,3]
