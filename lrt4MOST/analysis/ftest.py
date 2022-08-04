@@ -48,7 +48,7 @@ class Ftest(AGNSelection):
         return
 
 
-    def selectAGN(self, res, pmax=0.1, chi2_max=100, fname=None, zphot_min_cut=False, res_stars=None, select_stars_function=None):
+    def selectAGN(self, res, pmax=0.1, chi2_max=100, fname=None, zphot_min_cut=False, res_stars=None, select_stars_function=None, save_list=True):
 
         #Attempt to read or calculate the F values. 
         self.getF(res)
@@ -63,7 +63,8 @@ class Ftest(AGNSelection):
         self.k_agn = (self.p<pmax) & (self.is_not_star(res, res_stars, select_stars_function))
 
         #Generate and save the list of objects.
-        self.savelist(fname, self.k_agn, res, chi2_max, zphot_min_cut)
+        if save_list:
+            self.savelist(fname, self.k_agn, res, chi2_max, zphot_min_cut)
 
         return
         
