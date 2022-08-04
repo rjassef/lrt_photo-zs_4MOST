@@ -6,7 +6,7 @@ import subprocess
 
 class ReadResults(object):
 
-    def __init__(self, ztype="zspec", catname=None):
+    def __init__(self, ztype="zspec", catname=None, catname_noagn=None):
 
         #Save the ztype requested.
         self.ztype = ztype
@@ -48,7 +48,9 @@ class ReadResults(object):
             self.vec  = data[:,11:15]
             del(data)
 
-            self.chi2_noagn = np.loadtxt("SED_fit_noagn_{}_all.dat".format(ztype), usecols=[3])
+            if catname_noagn is None:
+                catname_noagn = "SED_fit_noagn_{}_all.dat".format(ztype)
+            self.chi2_noagn = np.loadtxt(catname_noagn, usecols=[3])
 
         return
 
