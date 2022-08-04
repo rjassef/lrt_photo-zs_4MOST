@@ -20,10 +20,10 @@ class BIC(AGNSelection):
         np.savetxt("BIC_{}.dat".format(self.ztype), self.BIC)
 
         #Run the selection.
-        kuse = (self.BIC>BIC_min) & (self.is_not_star(res, res_stars, select_stars_function))
+        self.k_agn = (self.BIC>BIC_min) & (self.is_not_star(res, res_stars, select_stars_function))
 
         #Generate and save the list of objects.
-        self.savelist(fname, kuse, res, chi2_max, zphot_min_cut)
+        self.savelist(fname, self.k_agn, res, chi2_max, zphot_min_cut)
 
         return
         

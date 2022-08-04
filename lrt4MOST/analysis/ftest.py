@@ -60,10 +60,10 @@ class Ftest(AGNSelection):
             fname = "AGN_Ftest_{}.dat".format(self.ztype)
 
         #Run the selection.
-        kuse = (self.p<pmax) & (self.is_not_star(res, res_stars, select_stars_function))
+        self.k_agn = (self.p<pmax) & (self.is_not_star(res, res_stars, select_stars_function))
 
         #Generate and save the list of objects.
-        self.savelist(fname, kuse, res, chi2_max, zphot_min_cut)
+        self.savelist(fname, self.k_agn, res, chi2_max, zphot_min_cut)
 
         return
         
