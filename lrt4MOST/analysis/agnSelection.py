@@ -1,4 +1,5 @@
 import numpy as np
+from astropy.table import Table
 
 class AGNSelection(object):
 
@@ -8,11 +9,18 @@ class AGNSelection(object):
         if zphot_min_cut and self.ztype=="zphot":
             kuse = kuse & (res.z>0.01)
 
-        self.objid_AGN = res.id[kuse]
-        ahat_AGN = res.ahat[kuse]
-        z_AGN = res.z[kuse]
-        ebv_AGN = res.ebv[kuse]
-        np.savetxt(fname,np.array([self.objid_AGN, z_AGN, ahat_AGN, ebv_AGN]).T, fmt='%15.0f %10.3f %7.2f %7.2f')
+        tab = Table()
+        tab['id'] = res.id[kuse]
+        tab['z']  = res.z[kuse]
+        tab['ahat'] = res.ahat[kuse]
+        tab['ebv']  = res.ebv[kuse]
+        tab.write(fname, format='ascii', overwrite=True)
+
+        # self.objid_AGN = res.id[kuse]
+        # ahat_AGN = res.ahat[kuse]
+        # z_AGN = res.z[kuse]
+        # ebv_AGN = res.ebv[kuse]
+        # np.savetxt(fname,np.array([self.objid_AGN, z_AGN, ahat_AGN, ebv_AGN]).T, fmt='%15.0f %10.3f %7.2f %7.2f')
 
         return
 
