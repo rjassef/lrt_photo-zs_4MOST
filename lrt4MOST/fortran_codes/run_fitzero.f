@@ -1,6 +1,6 @@
         program main
         implicit real*8(a-h,o-z)
-        parameter (NCMAX=32)
+        parameter (NCMAX=40)
 
         real*8 corr(NCMAX)
         character*200 fname_in
