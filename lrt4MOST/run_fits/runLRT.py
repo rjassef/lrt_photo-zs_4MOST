@@ -4,6 +4,7 @@ import subprocess
 import os 
 from time import sleep
 import pathlib
+from astropy.table import Table
 
 class RunLRT(object):
 
@@ -97,22 +98,43 @@ class RunLRT(object):
                 k2 = np.sum(nobjs[:n+1])
 
                 #Set the output array.
-                out = np.zeros((nobjs[n],2+nchan*3))
-                out[:,0] = phot.id[k1:k2]
-                out[:,1] = phot.zspec[k1:k2]
-                out[:,        2:  nchan+2] = phot.jy[:, k1:k2].T
-                out[:,  nchan+2:2*nchan+2] = phot.ejy[:, k1:k2].T
-                out[:,2*nchan+2:3*nchan+2] = phot.jyuse[:, k1:k2].T
+                out = Table()
+                out['ID'] = phot.id[k1:k2]
+                out['z'] = phot.zspec[k1:k2]
+                for j in range(phot.jy.shape[0]):
+                    out['jy{}'.format(j)] = phot.jy[j, k1:k2]
+                for j in range(phot.ejy.shape[0]):
+                    out['ejy{}'.format(j)] = phot.ejy[j, k1:k2]              
+                for j in range(phot.jyuse.shape[0]):
+                    out['jyuse{}'.format(j)] = phot.jyuse[j, k1:k2]
+                
+                # out = np.zeros((nobjs[n],2+nchan*3))
+                # out[:,0] = phot.id[k1:k2]
+                # out[:,1] = phot.zspec[k1:k2]
+                # out[:,        2:  nchan+2] = phot.jy[:, k1:k2].T
+                # out[:,  nchan+2:2*nchan+2] = phot.ejy[:, k1:k2].T
+                # out[:,2*nchan+2:3*nchan+2] = phot.jyuse[:, k1:k2].T
 
                 #If we are using zphots, then add those to the data array instead. 
                 if zphots is not None:
-                    out[:,1] = zphots[k1:k2]
+                    #out[:,1] = zphots[k1:k2]
+                    out['z'] = zphots[k1:k2]
+
+                #Set the output table format.
+                out['id'].format = "%15d"
+                out['z'].format = "%15.4f"
+                for j in range(phot.jy.shape[0]):
+                    out['jy{}'.format(j)].format = "%15.3e"
+                    out['ejy{}'.format(j)].format = "%15.3e"
+                    out['jyuse{}'.format(j)].format = "%3.0f"
 
                 #Write the data file.
                 cato = open(finput,"w")
                 cato.write("{0:d} {1:d}\n".format(nobjs[n],nchan))
-                np.savetxt(cato,out,fmt='%15.0f %15.4f'+'%15.3e'*(2*nchan)+'%3.0f'*nchan)
+                # np.savetxt(cato,out,fmt='%15.0f %15.4f'+'%15.3e'*(2*nchan)+'%3.0f'*nchan)
+                out.write(cato, format='ascii.no_header')
                 cato.close()
+                del(out)
 
             #If we are forcing the reset, then erase the outputfile as well.
             if reset:
