@@ -99,7 +99,7 @@ class RunLRT(object):
 
                 #Set the output array.
                 out = Table()
-                out['ID'] = phot.id[k1:k2]
+                out['id'] = phot.id[k1:k2]
                 out['z'] = phot.zspec[k1:k2]
                 for j in range(phot.jy.shape[0]):
                     out['jy{}'.format(j)] = phot.jy[j, k1:k2]
