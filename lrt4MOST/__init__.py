@@ -9,3 +9,4 @@ from .analysis.ftest import Ftest
 from .analysis.readResults import ReadResults
 from .analysis.bic import BIC
 from .analysis.ahatSelection import ahatSelection
+from .analysis.dr17RC import DR17RC
