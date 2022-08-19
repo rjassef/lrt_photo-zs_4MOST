@@ -33,6 +33,8 @@ class Ftest(AGNSelection):
         w = nnu1*self.F/(nnu1*self.F+nnu2)
         self.p = 1.-betainc(nnu1/2.,nnu2/2.,w)
 
+        #To recognize more easily the sources for which we could not calculate F due to the lack of photometric bands, let's change the F values to -1 for those sources. 
+        self.F[nu<=0.] = -1.0
 
         np.savetxt(outname, np.array([self.F,self.p]).T)
 
