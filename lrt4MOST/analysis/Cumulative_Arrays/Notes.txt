@@ -1,0 +1,1 @@
+Calculate using all DR17 spec sources in Stripe 82 with zWarning=0 and using the photometric zero points optimized for AGN. 
