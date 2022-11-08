@@ -9,7 +9,7 @@ class ReadPhot(ProcPhot):
     def __init__(self, fname, n=1, idcol='id', zcol='redshift', input_unit='mJy', output_flux_unit='Jy', noise_floor=0.1, flux_min=None, flux_min_band=None):
 
         #Open the file. 
-        tab = fits.open(fname, format=format)
+        tab = fits.open(fname)
 
         #Save the photometry columns. We recognize them as they have a name followed by a _err. 
         self.photcols = list()
