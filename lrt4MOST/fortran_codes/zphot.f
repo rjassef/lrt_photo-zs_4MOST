@@ -19,7 +19,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 c     Open the files used.
       if(iargc().ne.5) then
-        print*,"Correct use: ./zphot fname_in fname_out"
+        print*,"Correct use: ./zphot fname_in fname_out zmin zmax dz"
         stop
       endif
       call getarg(1,fname_in)
