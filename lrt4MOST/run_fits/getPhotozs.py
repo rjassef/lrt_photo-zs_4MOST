@@ -5,12 +5,17 @@ from .runLRT import RunLRT
 
 class GetPhotozs(RunLRT):
 
-    def __init__(self, with_AGN=True, with_prior=False):
+    def __init__(self, with_AGN=True, with_prior=False, zmin=0., zmax=6., dz=0.01):
+        # if zmax is None:
+        #     if with_AGN: 
+        #         zmax = 6.
+        #     else:
+        #         zmax = 2.
         if with_prior:
             self.set_prior()
         else:
             subprocess.call(["rm","-rf","prior.dat"])
-        super(GetPhotozs,self).__init__(fit_type="zphot", with_AGN=with_AGN, ztype="zphot")
+        super(GetPhotozs,self).__init__(fit_type="zphot", with_AGN=with_AGN, ztype="zphot", zmin=zmin, zmax=zmax, dz=dz)
         return
 
     def set_prior(self):

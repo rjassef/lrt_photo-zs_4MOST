@@ -8,13 +8,17 @@ from astropy.table import Table
 
 class RunLRT(object):
 
-    def __init__(self, fit_type, ztype, with_AGN=True, stype=None):
+    def __init__(self, fit_type, ztype, with_AGN=True, stype=None, zmin=None, zmax=None, dz=None):
 
         #Save input flags.
         self.fit_type = fit_type
         self.with_AGN = with_AGN
         self.ztype = ztype
         self.stype = stype
+
+        self.zmin = zmin
+        self.zmax = zmax
+        self.dz = dz
 
         self.star_type_ID = {
             "MS":1,
@@ -144,6 +148,8 @@ class RunLRT(object):
             code_path = "{0:s}/lrt4MOST/fortran_codes/{1:s}".format(os.environ.get('LRT4MOST_LOC'),self.code)
             if self.ztype=='star':
                 code_path += " {}".format(self.star_type_ID[self.stype])
+            if self.fit_type is 'zphot':
+                p.append(subprocess.Popen("{0} {1} {2} {3} {4} {5}".format(code_path, finput, foutput, self.zmin, self.zmax, self.dz),shell=True))
             p.append(subprocess.Popen("{0} {1} {2}".format(code_path, finput, foutput),shell=True))
 
         #Wait for all the threads to finish

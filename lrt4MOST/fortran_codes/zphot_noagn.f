@@ -15,22 +15,31 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       character*200 line
       character*200 fname_in, fname_out
+      character*200 zmin_str, zmax_str, dz_str
+      real*8 zmin, zmax, dz
 
       real*8 zgal(NXMAX),galjy(NXMAX,NSMAX,NCMAX,NEMAX,NIMAX)
       common /galtemp/zgal,galjy,ngalz,ngalt
 
 c     Open the files used.
-      if(iargc().ne.2) then
-        print*,"Correct use: ./zphot fname_in fname_out"
+      if(iargc().ne.5) then
+        print*,"Correct use: ./zphot fname_in fname_out zmin zmax dz"
         stop
       endif
       call getarg(1,fname_in)
       call getarg(2,fname_out)
+      call getarg(3,zmin_str)
+      call getarg(4,zmax_str)
+      call getarg(5,dz_str)
       open(unit=11, file=trim(fname_in), status='old')
       open(unit=12, file=trim(fname_out), status='unknown')
 
 c     Initialize the subroutines.
-      call pzinit('bandmag.dat',1,0,0,0.d0,6.0d0,0.01d0,0)
+      read(zmin_str,*) zmin
+      read(zmax_str,*) zmax
+      read(dz_str  ,*) dz
+      call pzinit('bandmag.dat',1,0,0,zmin,zmax,dz,0)
+c      call pzinit('bandmag.dat',1,1,0,0.d0,6.0d0,0.01d0,0)
 
  200  read(11,'(a)')line
          if(line(1:1).eq.'#') goto 200
