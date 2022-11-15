@@ -149,6 +149,7 @@ class RunLRT(object):
             if self.ztype=='star':
                 code_path += " {}".format(self.star_type_ID[self.stype])
             if self.fit_type == 'zphot':
+                print("{0} {1} {2} {3} {4} {5}".format(code_path, finput, foutput, self.zmin, self.zmax, self.dz))
                 p.append(subprocess.Popen("{0} {1} {2} {3} {4} {5}".format(code_path, finput, foutput, self.zmin, self.zmax, self.dz),shell=True))
             p.append(subprocess.Popen("{0} {1} {2}".format(code_path, finput, foutput),shell=True))
 
