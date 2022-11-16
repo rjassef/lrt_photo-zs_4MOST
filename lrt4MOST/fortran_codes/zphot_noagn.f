@@ -39,7 +39,7 @@ c     Initialize the subroutines.
       read(zmax_str,*) zmax
       read(dz_str  ,*) dz
       call pzinit('bandmag.dat',1,0,0,zmin,zmax,dz,0)
-c      call pzinit('bandmag.dat',1,1,0,0.d0,6.0d0,0.01d0,0)
+c      call pzinit('bandmag.dat',1,0,0,0.d0,6.0d0,0.01d0,0)
 
  200  read(11,'(a)')line
          if(line(1:1).eq.'#') goto 200
