@@ -10,12 +10,12 @@ class ProcPhot(object):
 
     def __init__(self, noise_floor, fg_dust_corr):
 
-        #Process the fluxes to get them ready for the fitting codes.
-        self.process_fluxes(noise_floor=noise_floor)
-
         #Apply the foreground dust reddening corrections if requested.
         if fg_dust_corr:
             self.apply_fg_dust_corr()
+
+        #Process the fluxes to get them ready for the fitting codes.
+        self.process_fluxes(noise_floor=noise_floor)
 
         #Finally, create the bandmag.dat file. 
         self.create_bandmagfile()
