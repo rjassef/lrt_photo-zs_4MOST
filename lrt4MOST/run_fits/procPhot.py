@@ -1,16 +1,21 @@
 import numpy as np
-from astropy.io import fits
 import astropy.units as u
 import warnings
 import pkg_resources
-import re
+from astropy.table import Table
+from astropy.coordinates import SkyCoord
+from dustmaps.sfd import SFDQuery
 
 class ProcPhot(object):
 
-    def __init__(self, noise_floor):
+    def __init__(self, noise_floor, fg_dust_corr):
 
         #Process the fluxes to get them ready for the fitting codes.
         self.process_fluxes(noise_floor=noise_floor)
+
+        #Apply the foreground dust reddening corrections if requested.
+        if fg_dust_corr:
+            self.apply_fg_dust_corr()
 
         #Finally, create the bandmag.dat file. 
         self.create_bandmagfile()
@@ -62,3 +67,37 @@ class ProcPhot(object):
         cato.close()
 
         return
+
+    def apply_fg_dust_corr(self):
+
+        #Query the SFD catalog for the position of all sources.
+        coords = SkyCoord(self.ra, self.dec, frame='icrs')
+        sfd = SFDQuery()
+        ebv = sfd(coords)
+
+        #Should find a classier way to do this for the lrt github, but this should be good enough for now.
+        filename = "fg_red/S11_Table6.dat"
+        stream = pkg_resources.resource_stream(__name__, filename)
+        s11 = Table.read(stream, format='ascii')
+        stream.close()
+
+        bandname = "fg_red/S11_band_name_dictionary.txt"
+        stream2 = pkg_resources.resource_stream(__name__, bandname)
+        s11_band_name = dict()
+        for line in stream2:
+            line = line.decode("utf-8")
+            x = line.split()
+            s11_band_name[x[0]] = x[1]
+        stream2.close()
+
+        for k, col in enumerate(self.photcols):
+            if col not in s11_band_name:
+                print("ERROR: band {} not in dictionary for FG dust corrections.".format(col))
+                continue
+            R_band = s11['R_V_3.1'][s11['Band']==s11_band_name[col]].value
+            A_band = R_band*ebv
+            self.jy[k] *= 10**(0.4*A_band)
+
+        return
+
+

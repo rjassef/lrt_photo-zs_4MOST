@@ -1,0 +1,8 @@
+g_prime         DES_g
+r_prime         DES_r
+i_prime         DES_i
+z_prime         DES_z
+vista.vircam.Y  DES_Y   #Should be good enough. 
+vista.vircam.J  UKIRT_J
+vista.vircam.H  UKIRT_H
+vista.vircam.Ks UKIRT_K

@@ -6,7 +6,7 @@ from .procPhot import ProcPhot
 
 class ReadPhot(ProcPhot):
 
-    def __init__(self, fname, n=1, idcol='id', zcol='redshift', input_unit='mJy', output_flux_unit='Jy', noise_floor=0.1, flux_min=None, flux_min_band=None):
+    def __init__(self, fname, n=1, idcol='id', racol='ra', deccol='dec', zcol='redshift', input_unit='mJy', output_flux_unit='Jy', noise_floor=0.1, flux_min=None, flux_min_band=None, fg_dust_corr=True):
 
         #Open the file. 
         tab = fits.open(fname)
@@ -28,6 +28,8 @@ class ReadPhot(ProcPhot):
 
         #Now, save the photometry, the IDs and the redshifts.
         self.id    = tab[1].data[idcol][iuse]
+        self.ra    = tab[1].data[racol][iuse]*u.deg
+        self.dec   = tab[1].data[deccol][iuse]*u.deg
         self.nobj  = len(self.id)
         self.zspec = tab[1].data[zcol][iuse]
         self.jy    = np.zeros((self.nchan, self.nobj))
@@ -41,6 +43,6 @@ class ReadPhot(ProcPhot):
         tab.close()
 
         #Run the rest of the photometry process initiation. 
-        super(ReadPhot,self).__init__(noise_floor=noise_floor)
+        super(ReadPhot,self).__init__(noise_floor=noise_floor, fg_dust_corr=fg_dust_corr)
 
         return
