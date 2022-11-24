@@ -2,6 +2,7 @@ import numpy as np
 import astropy.units as u 
 from astropy.table import Table
 import pathlib
+import re
 
 from .. import ReadPhot, GetPhotozs, GetSEDFits, GetStarFits, combine_star_fit_catalogs
 from .. import ReadResults, Ftest, BIC
@@ -10,7 +11,11 @@ def process_catalog(catalog_file_name, nobj_per_thread = 50000, ncpu=None, mag_s
 
     #Final output catalog. Skip if it exists already.
     if fout_name is None:
-        fout_name = "fullproc_"+catalog_file_name
+        fout_name = re.sub("\.\./","",catalog_file_name)
+        fout_name = re.sub("\.fits",".fullproc.fits",fout_name)
+        #fout_name = "fullproc_"+catalog_file_name
+        print(fout_name)
+        return
     if pathlib.Path(fout_name).exists():
         print("Catalog fully processed already. Skipping all operationds.")
         return
