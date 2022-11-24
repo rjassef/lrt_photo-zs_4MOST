@@ -6,7 +6,7 @@ import pathlib
 from .. import ReadPhot, GetPhotozs, GetSEDFits, GetStarFits, combine_star_fit_catalogs
 from .. import ReadResults, Ftest, BIC
 
-def process_catalog(catalog_file_name, nobj_per_thread = 50000, ncpu=None, mag_save_bname='r_prime', fout_name=None):
+def process_catalog(catalog_file_name, nobj_per_thread = 50000, ncpu=None, mag_save_bname='r_prime', fout_name=None, dz=0.01):
 
     #Final output catalog. Skip if it exists already.
     if fout_name is None:
@@ -21,11 +21,11 @@ def process_catalog(catalog_file_name, nobj_per_thread = 50000, ncpu=None, mag_s
 
     #Get the photo-zs with and without the AGN template.
     print('Getting AGN/Gal photo-zs...')
-    zphot_calc = GetPhotozs(with_AGN=True)
+    zphot_calc = GetPhotozs(with_AGN=True, dz=dz)
     zphot_calc.run(phot, ncpu=ncpu, nobj_per_thread=nobj_per_thread)
 
     print('Getting Gal only photo-zs...')
-    zphot_noagn_calc = GetPhotozs(with_AGN=False, zmax=2.0)
+    zphot_noagn_calc = GetPhotozs(with_AGN=False, zmax=2.0, dz=dz)
     zphot_noagn_calc.run(phot, ncpu=ncpu, nobj_per_thread=nobj_per_thread)
 
     #Fit the SEDs with z_phot
@@ -87,5 +87,11 @@ def process_catalog(catalog_file_name, nobj_per_thread = 50000, ncpu=None, mag_s
     proc_table['BIC'] = B.BIC
     proc_table['Fp'] = Fp.p
     proc_table.write(fout_name, format='fits')
+
+    return
+
+def fast_process_catalog(catalog_file_name, nobj_per_thread = 50000, ncpu=None, mag_save_bname='r_prime', fout_name=None):
+
+    process_catalog(catalog_file_name, nobj_per_thread = nobj_per_thread, ncpu=ncpu, mag_save_bname=mag_save_bname, fout_name=fout_name, dz=0.05)
 
     return
