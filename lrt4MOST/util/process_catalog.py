@@ -54,7 +54,7 @@ def process_catalog(catalog_file_name, nobj_per_thread = 50000, ncpu=None, mag_s
     combine_star_fit_catalogs(stypes)
 
     #Save the requested magnitudes. 
-    k = np.arwghere(phot2.photcols==mag_save_bname)
+    k = np.argwhere(phot2.photcols==mag_save_bname)
     zp = (3631.*u.Jy).to(phot2.output_flux_unit).value
     mag = -2.5*np.log10(phot2.jy[k]/zp)
     mag[np.isnan(mag)] = 99.
