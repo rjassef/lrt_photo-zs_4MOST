@@ -55,8 +55,6 @@ def process_catalog(catalog_file_name, nobj_per_thread = 50000, ncpu=None, mag_s
 
     #Save the requested magnitudes. 
     k = np.argwhere(phot2.photcols==mag_save_bname)[0][0]
-    print(k)
-    return
     zp = (3631.*u.Jy).to(phot2.output_flux_unit).value
     mag = -2.5*np.log10(phot2.jy[k]/zp)
     mag[np.isnan(mag)] = 99.
