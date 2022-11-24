@@ -67,8 +67,8 @@ def process_catalog(catalog_file_name, nobj_per_thread = 50000, ncpu=None, mag_s
     res_stars  = ReadResults(ztype='star', catname="combined_star_fit.dat")
 
     #Calculate the BIC index.
-    BIC = BIC(ztype="zphot")
-    BIC.getBIC(res_agngal)
+    B = BIC(ztype="zphot")
+    B.getBIC(res_agngal)
 
     #Calculate the Fprob
     Fp = Ftest(ztype="zphot")
@@ -84,7 +84,7 @@ def process_catalog(catalog_file_name, nobj_per_thread = 50000, ncpu=None, mag_s
     proc_table['chi2_agngal'] = res_agngal.chi2_agn
     proc_table['chi2_gal'] = res_agngal.chi2_noagn
     proc_table['chi2_star'] = res_stars.chi2
-    proc_table['BIC'] = BIC.BIC
+    proc_table['BIC'] = B.BIC
     proc_table['Fp'] = Fp.p
     proc_table.write(fout_name, format='fits')
 
