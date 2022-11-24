@@ -12,8 +12,8 @@ def process_catalog(catalog_file_name, nobj_per_thread = 50000, ncpu=None):
     zphot_calc.run(phot, ncpu=ncpu, nobj_per_thread=nobj_per_thread)
 
     print('Getting Gal only photo-zs...')
-    zphot_noagn_calc = GetPhotozs(with_AGN=False)
-    zphot_noagn_calc.run(phot, ncpu=ncpu, nobj_per_thread=nobj_per_thread, zmax=2.0)
+    zphot_noagn_calc = GetPhotozs(with_AGN=False, zmax=2.0)
+    zphot_noagn_calc.run(phot, ncpu=ncpu, nobj_per_thread=nobj_per_thread)
 
     #Fit the SEDs with z_phot
     print('Running full AGN/Gal SED fit...')
