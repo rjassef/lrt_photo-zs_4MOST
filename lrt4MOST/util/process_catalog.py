@@ -13,9 +13,6 @@ def process_catalog(catalog_file_name, nobj_per_thread = 50000, ncpu=None, mag_s
     if fout_name is None:
         fout_name = re.sub("\.\./","",catalog_file_name)
         fout_name = re.sub("\.fits",".fullproc.fits",fout_name)
-        #fout_name = "fullproc_"+catalog_file_name
-        print(fout_name)
-        return
     if pathlib.Path(fout_name).exists():
         print("Catalog fully processed already. Skipping all operationds.")
         return
