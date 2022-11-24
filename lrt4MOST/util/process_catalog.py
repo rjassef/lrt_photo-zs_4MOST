@@ -59,7 +59,7 @@ def process_catalog(catalog_file_name, nobj_per_thread = 50000, ncpu=None, mag_s
     k = np.argwhere(phot2.photcols==mag_save_bname)[0][0]
     zp = (3631.*u.Jy).to(phot2.output_flux_unit).value
     mag = -2.5*np.log10(phot2.jy[k]/zp)
-    mag[np.isnan(mag)] = 99.
+    mag[(np.isnan(mag)) | (np.isinf(mag))] = 99.
 
     #Load the fit results.
     print("Reading AGN/Gal fit results...")
