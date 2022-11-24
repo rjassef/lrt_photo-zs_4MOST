@@ -1,6 +1,11 @@
 import numpy as np 
+import pathlib
 
 def combine_star_fit_catalogs(stypes, output_catalog="combined_star_fit.dat"):
+
+    if pathlib.Path(output_catalog).exists():
+        print("Catalog already exists. Skipping step")
+        return
 
     #Write the header of the catalog. 
     cat = open(output_catalog,"w")
