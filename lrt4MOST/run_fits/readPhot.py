@@ -39,6 +39,9 @@ class ReadPhot(ProcPhot):
             self.jy[k]  = tab[n].data[col][iuse] * flux_factor
             self.ejy[k] = tab[n].data[col+"_err"][iuse] * flux_factor
 
+        #Save the flux units.
+        self.output_flux_unit = u.Unit(output_flux_unit)
+
         #Close the table.
         tab.close()
 

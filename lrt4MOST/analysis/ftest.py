@@ -10,13 +10,14 @@ class Ftest(AGNSelection):
         self.ztype = ztype
         return
 
-    def getF(self, res, outname=None, force=False):
+    def getF(self, res, savefile=True, outname=None, force=False):
 
         #Output name
         if outname is None:
             outname = "Ftest_{0:s}.dat".format(self.ztype)
         if not force and pathlib.Path(outname).exists():
             print("Output file already exists. Skipping calculation.")
+            self.readF(fname=outname)
             return
 
         #Get the degrees of freedom.
@@ -36,7 +37,8 @@ class Ftest(AGNSelection):
         #To recognize more easily the sources for which we could not calculate F due to the lack of photometric bands, let's change the F values to -1 for those sources. 
         self.F[nu<=0.] = -1.0
 
-        np.savetxt(outname, np.array([self.F,self.p]).T)
+        if savefile:
+            np.savetxt(outname, np.array([self.F,self.p]).T)
 
         return
 
@@ -54,8 +56,8 @@ class Ftest(AGNSelection):
 
         #Attempt to read or calculate the F values. 
         self.getF(res)
-        if not hasattr(self, 'F'):
-            self.readF()
+        # if not hasattr(self, 'F'):
+        #     self.readF()
 
         #Output catalog name.
         if fname is None:
