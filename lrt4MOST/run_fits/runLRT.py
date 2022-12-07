@@ -1,5 +1,6 @@
 import numpy as np
-import multiprocessing
+#import multiprocessing
+import psutil
 import subprocess
 import os 
 from time import sleep
@@ -50,7 +51,8 @@ class RunLRT(object):
 
         #Set the number of CPUs to use if not provided.
         if ncpu is None:
-            ncpu = multiprocessing.cpu_count()-2
+            #ncpu = multiprocessing.cpu_count()-2
+            ncpu = psutil.cpu_count(logical=False)
 
         #Convenience variables.
         ntot = phot.nobj

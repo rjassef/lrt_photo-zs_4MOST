@@ -1,6 +1,7 @@
 import subprocess
 import os
-import multiprocessing
+#import multiprocessing
+import psutil
 import numpy as np
 
 def Runfitzero(phot, catname="fitzero_sample.txt", ncpu=None, nobj_max=None):
@@ -23,7 +24,8 @@ def Runfitzero(phot, catname="fitzero_sample.txt", ncpu=None, nobj_max=None):
 
     #Set the number of CPUs to use.
     if ncpu is None:
-        ncpu = multiprocessing.cpu_count()-2
+        #ncpu = multiprocessing.cpu_count()-2
+        ncpu = psutil.cpu_count(logical=False)
     my_env = os.environ.copy()
     my_env['OMP_NUM_THREADS'] = "{}".format(ncpu)
 
