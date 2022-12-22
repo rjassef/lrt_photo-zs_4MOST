@@ -4,6 +4,7 @@ g_prime         DECAM_g                 3          3631.0
 r_prime         DECAM_r                 3          3631.0
 i_prime         DECAM_i                 3          3631.0
 z_prime         DECAM_z                 3          3631.0
+vista.vircam.Z  vistaZ                  3          3631.0
 vista.vircam.Y  vistaY                  3          3631.0
 vista.vircam.J  vistaJ                  3          3631.0
 vista.vircam.H  vistaH                  3          3631.0
