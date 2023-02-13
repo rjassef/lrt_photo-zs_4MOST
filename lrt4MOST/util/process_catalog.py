@@ -95,8 +95,8 @@ def process_catalog(catalog_file_name, nobj_per_thread = 50000, ncpu=None, mag_s
 
     return
 
-def fast_process_catalog(catalog_file_name, nobj_per_thread = 50000, ncpu=None, mag_save_bname='r_prime', fout_name=None):
+def fast_process_catalog(catalog_file_name, nobj_per_thread = 50000, ncpu=None, mag_save_bname='r_prime', fout_name=None, suffix="fullproc", save_photozs=False):
 
-    process_catalog(catalog_file_name, nobj_per_thread = nobj_per_thread, ncpu=ncpu, mag_save_bname=mag_save_bname, fout_name=fout_name, dz=0.05)
+    process_catalog(catalog_file_name, nobj_per_thread = nobj_per_thread, ncpu=ncpu, mag_save_bname=mag_save_bname, fout_name=fout_name, dz=0.05, suffix=suffix, save_photozs=save_photozs)
 
     return
