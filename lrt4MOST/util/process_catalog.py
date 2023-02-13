@@ -7,12 +7,12 @@ import re
 from .. import ReadPhot, GetPhotozs, GetSEDFits, GetStarFits, combine_star_fit_catalogs
 from .. import ReadResults, Ftest, BIC
 
-def process_catalog(catalog_file_name, nobj_per_thread = 50000, ncpu=None, mag_save_bname='r_prime', fout_name=None, dz=0.01):
+def process_catalog(catalog_file_name, nobj_per_thread = 50000, ncpu=None, mag_save_bname='r_prime', fout_name=None, dz=0.01, suffix="fullproc", save_photozs=False):
 
     #Final output catalog. Skip if it exists already.
     if fout_name is None:
         fout_name = re.sub("\.\./","",catalog_file_name)
-        fout_name = re.sub("\.fits",".fullproc.fits",fout_name)
+        fout_name = re.sub("\.fits",".{}.fits".format(suffix),fout_name)
     if pathlib.Path(fout_name).exists():
         print("Catalog fully processed already. Skipping all operationds.")
         return
@@ -88,6 +88,9 @@ def process_catalog(catalog_file_name, nobj_per_thread = 50000, ncpu=None, mag_s
     proc_table['chi2_star'] = res_stars.chi2
     proc_table['BIC'] = B.BIC
     proc_table['Fp'] = Fp.p
+    if save_photozs:
+        proc_table['zphot_agngal'] = res_agngal.z
+        proc_table['zphot_gal'] = res_agngal.z_noagn
     proc_table.write(fout_name, format='fits')
 
     return

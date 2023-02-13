@@ -50,7 +50,9 @@ class ReadResults(object):
 
             if catname_noagn is None:
                 catname_noagn = "SED_fit_noagn_{}_all.dat".format(ztype)
-            self.chi2_noagn = np.loadtxt(catname_noagn, usecols=[3])
+            noagn_data = np.loadtxt(catname_noagn, usecols=[2,3])
+            self.z_noagn = noagn_data[:,0]
+            self.chi2_noagn = noagn_data[:,1]
 
         return
 
