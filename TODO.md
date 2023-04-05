@@ -26,3 +26,5 @@
    - *Required changes*: All codes would need work. Some may need to be re-written in C or Fortran to allow for this without affecting execution speed.
         
 - [ ] Add photo-zs to final catalogs. Add also reddening and Lagn/Lhost.
+
+- [ ] Implement way to plot galaxy-only fits.
