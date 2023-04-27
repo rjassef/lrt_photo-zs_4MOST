@@ -108,3 +108,35 @@ class ReadResults(object):
 
         return
 
+    def model_obs_ratio(self, id, phot):
+
+        #Match. Alert if there is more than one match. 
+        k = np.where(self.id==id)
+        if len(k)>1:
+            print("There are {} matches to id {}. Using the first one".format(len(k), id))
+        kuse = k[0][0]
+
+        #Create the lrt SED Model object. 
+        if self.ztype == 'star':
+            st_num = "{0:.0f}".format(self.star_set[kuse])
+            obj = StarModel(st=self.star_set_name[st_num])
+        else:
+            obj = SED_Model.lrt_model()
+
+        #Populate the model. 
+        obj.jy = phot.jy[:,kuse]
+        obj.ejy = phot.ejy[:,kuse]
+        obj.jyuse = phot.jyuse[:,kuse]
+        obj.ejy[np.isnan(obj.ejy)] = 0.
+        obj.name = phot.id[kuse]
+        if self.ztype!='star':
+            #obj.zspec = self.z[kuse]
+            exec("obj.{} = {}".format(self.ztype,self.z[kuse]))
+
+        if self.ztype=='star':
+            obj.fit()
+        else:
+            obj.kc_fit()
+
+        return obj.jy/obj.jymod
+
